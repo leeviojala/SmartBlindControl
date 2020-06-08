@@ -55,7 +55,7 @@ export default function Blinds() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Button
-            disabled={blindState <= 3}
+            disabled={blindState <= 1}
             color="primary"
             fullWidth
             variant="contained"
@@ -66,7 +66,7 @@ export default function Blinds() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Button
-            disabled={blindState <= 1}
+            disabled={blindState <= 0}
             fullWidth
             variant="contained"
             onClick={() => controlBlinds("closeMore")}
