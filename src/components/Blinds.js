@@ -55,7 +55,7 @@ export default function Blinds() {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Button
-            disabled={blindState <= 2}
+            disabled={blindState <= 3}
             color="primary"
             fullWidth
             variant="contained"
