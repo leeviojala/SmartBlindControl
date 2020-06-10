@@ -1,9 +1,44 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Button, Grid } from "@material-ui/core";
+import {
+  Container,
+  Button,
+  Grid,
+  Slider,
+  AppBar,
+  Toolbar,
+  Typography,
+} from "@material-ui/core";
 
+const marks = [
+  {
+    value: 0,
+    label: "Closed convex in",
+  },
+  {
+    value: 1,
+    label: "open a bit",
+  },
+  {
+    value: 2,
+    label: "fully open",
+  },
+  {
+    value: 3,
+    label: "open a bit",
+  },
+  {
+    value: 4,
+    label: "Closed convex out",
+  },
+];
 export default function Blinds() {
-  const [blindState, setBlindState] = useState(0);
+  const [value, setValue] = React.useState(1);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const [blindState, setBlindState] = useState(9999);
   const controlBlinds = (value) => {
     axios
       .post(
@@ -28,10 +63,42 @@ export default function Blinds() {
   useEffect(() => {
     getState();
   });
+  useEffect(() => {
+    setValue(blindState);
+  }, [blindState]);
+  useEffect(() => {
+    console.log(blindState - value);
+    switch (blindState - value) {
+      case -2:
+        console.log("avaa");
+        controlBlinds("open");
+        break;
+      case -1:
+        console.log("avaa enemmän");
+        controlBlinds("openMore");
+        break;
+      case 1:
+        console.log("sulje enemmän");
+        controlBlinds("closeMore");
+        break;
+      case 2:
+        console.log("sulje");
+        controlBlinds("close");
+        break;
+      default:
+        console.log("yeet");
+    }
+  }, [value]);
   return (
-    <Container style={{ paddingTop: "16px" }}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+    <React.Fragment>
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h6">Control Blinds</Typography>
+        </Toolbar>
+      </AppBar>
+      <Container style={{ paddingTop: "86px" }}>
+        <Grid container spacing={2}>
+          {/* <Grid item xs={12} sm={6}>
           {console.log(parseInt(blindState))}
           <Button
             disabled={blindState >= 3}
@@ -73,8 +140,23 @@ export default function Blinds() {
           >
             Sulje Enemmän
           </Button>
+        </Grid> */}
+          <Grid item xs={12}></Grid>
+          <Grid item xs={12}>
+            <Slider
+              defaultValue={blindState}
+              value={value}
+              aria-labelledby="discrete-slider"
+              valueLabelDisplay="on"
+              onChange={handleChange}
+              step={1}
+              marks
+              min={0}
+              max={4}
+            />
+          </Grid>
         </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </React.Fragment>
   );
 }
