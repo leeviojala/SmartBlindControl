@@ -42,7 +42,7 @@ export default function Blinds() {
   const controlBlinds = (value) => {
     axios
       .post(
-        `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/blinds?access_token=0fe540c86d68f45a04033fb9fda204455d702b64`,
+        `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/blinds?access_token=35c09bef4da6e6e45647d5275bcee5b4c56918bb`,
         { value: value }
       )
       .then((res) => {
