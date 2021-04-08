@@ -1,94 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import {
   Container,
-  Button,
   Grid,
-  Slider,
   AppBar,
   Toolbar,
   Typography,
+  Switch,
 } from "@material-ui/core";
 
-const marks = [
-  {
-    value: 0,
-    label: "Closed convex in",
-  },
-  {
-    value: 1,
-    label: "open a bit",
-  },
-  {
-    value: 2,
-    label: "fully open",
-  },
-  {
-    value: 3,
-    label: "open a bit",
-  },
-  {
-    value: 4,
-    label: "Closed convex out",
-  },
-];
 export default function Blinds() {
-  const [value, setValue] = React.useState(1);
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const [open, setOpen] = React.useState(false);
+  const handleChange = () => {
+    !open ? controlBlind("open") : controlBlind("close");
   };
 
-  const [blindState, setBlindState] = useState(9999);
-  const controlBlinds = (value) => {
-    axios
-      .post(
-        `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/blinds?access_token=35c09bef4da6e6e45647d5275bcee5b4c56918bb`,
-        { value: value }
-      )
-      .then((res) => {
-        console.log(res);
-        getState();
-      });
-  };
   const getState = () => {
     axios
       .get(
-        `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/state?access_token=0fe540c86d68f45a04033fb9fda204455d702b64`
+        `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/state?access_token=35c09bef4da6e6e45647d5275bcee5b4c56918bb`
       )
       .then((res) => {
-        setBlindState(res.data.result);
-        console.log(blindState);
+        setOpen(res.data.result === 1 ? true : false);
       });
   };
   useEffect(() => {
     getState();
   });
-  useEffect(() => {
-    setValue(blindState);
-  }, [blindState]);
-  useEffect(() => {
-    console.log(blindState - value);
-    switch (blindState - value) {
-      case -2:
-        console.log("avaa");
-        controlBlinds("open");
-        break;
-      case -1:
-        console.log("avaa enemmän");
-        controlBlinds("openMore");
-        break;
-      case 1:
-        console.log("sulje enemmän");
-        controlBlinds("closeMore");
-        break;
-      case 2:
-        console.log("sulje");
-        controlBlinds("close");
-        break;
-      default:
-        console.log("yeet");
-    }
-  }, [value]);
+
+  const controlBlind = async (value) => {
+    const controlBlinds = await axios.post(
+      `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/blinds?access_token=35c09bef4da6e6e45647d5275bcee5b4c56918bb`,
+      { value: value }
+    );
+    console.log(controlBlinds.data.return_value);
+    setOpen(controlBlinds.data.return_value === 1 ? true : false);
+  };
+
   return (
     <React.Fragment>
       <AppBar>
@@ -98,61 +46,12 @@ export default function Blinds() {
       </AppBar>
       <Container style={{ paddingTop: "86px" }}>
         <Grid container spacing={2}>
-          {/* <Grid item xs={12} sm={6}>
-          {console.log(parseInt(blindState))}
-          <Button
-            disabled={blindState >= 3}
-            color="primary"
-            fullWidth
-            variant="contained"
-            onClick={() => controlBlinds("open")}
-          >
-            Avaa
-          </Button>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Button
-            disabled={blindState >= 4}
-            fullWidth
-            variant="contained"
-            onClick={() => controlBlinds("openMore")}
-          >
-            Avaa Enemmän
-          </Button>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Button
-            disabled={blindState <= 1}
-            color="primary"
-            fullWidth
-            variant="contained"
-            onClick={() => controlBlinds("close")}
-          >
-            Sulje
-          </Button>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Button
-            disabled={blindState <= 0}
-            fullWidth
-            variant="contained"
-            onClick={() => controlBlinds("closeMore")}
-          >
-            Sulje Enemmän
-          </Button>
-        </Grid> */}
-          <Grid item xs={12}></Grid>
           <Grid item xs={12}>
-            <Slider
-              defaultValue={blindState}
-              value={value}
-              aria-labelledby="discrete-slider"
-              valueLabelDisplay="on"
+            <Switch
+              checked={open}
               onChange={handleChange}
-              step={1}
-              marks
-              min={0}
-              max={4}
+              name="checkedA"
+              inputProps={{ "aria-label": "secondary checkbox" }}
             />
           </Grid>
         </Grid>
