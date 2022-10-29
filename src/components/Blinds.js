@@ -11,6 +11,7 @@ import {
 
 export default function Blinds() {
   const [open, setOpen] = React.useState(false);
+  const [disabled, setDisabled] = React.useState(false);
   const handleChange = () => {
     !open ? controlBlind("open") : controlBlind("close");
   };
@@ -18,7 +19,7 @@ export default function Blinds() {
   const getState = () => {
     axios
       .get(
-        `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/state?access_token=35c09bef4da6e6e45647d5275bcee5b4c56918bb`
+        `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/state?access_token=b96d0a6a6ed1bedaf6c3635b30fc2dd4f8388495`
       )
       .then((res) => {
         setOpen(res.data.result === 1 ? true : false);
@@ -29,12 +30,15 @@ export default function Blinds() {
   });
 
   const controlBlind = async (value) => {
+    setDisabled(true);
     const controlBlinds = await axios.post(
-      `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/blinds?access_token=35c09bef4da6e6e45647d5275bcee5b4c56918bb`,
+      `https://api.particle.io/v1/devices/e00fce68b69caa089b4e4287/blinds?access_token=b96d0a6a6ed1bedaf6c3635b30fc2dd4f8388495`,
       { value: value }
     );
     console.log(controlBlinds.data.return_value);
     setOpen(controlBlinds.data.return_value === 1 ? true : false);
+
+    setDisabled(false);
   };
 
   return (
@@ -48,6 +52,7 @@ export default function Blinds() {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <Switch
+              disabled={disabled}
               checked={open}
               onChange={handleChange}
               name="checkedA"
